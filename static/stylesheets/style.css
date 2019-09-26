@@ -11,28 +11,6 @@ html,body{
   font-family: 'Open Sans';
 }
 
-#tip{
-  text-align: left;
-  color: #f0f879;
-  font-size: 14px;
-}
-
-#picture{
-  position: absolute;
-  top: 5px;
-  right: 0;
-  left: 0;
-}
-
-#hostname{
-  position: absolute;
-  top: 15px;
-  right: 0;
-  left: 0;
-  color: #475e6d;
-  font-size: 16px;
-}
-
 #content-container{
   z-index: 2;
   position: relative;
@@ -42,6 +20,7 @@ html,body{
   max-width: 940px;
   height: 100%;
 }
+
 #content-container-center{
   display: table-cell;
   text-align: center;
@@ -51,16 +30,6 @@ html,body{
   color: #254356;
 }
 
-#background-stats{
-  z-index:1;
-  height:100%;
-  width:100%;
-  position:absolute;
-}
-#background-stats div{
-  transition: width 400ms ease-in-out;
-  display:inline-block;
-  margin-bottom:-4px;
-  width:50%;
-  height:100%;
+#content-container-center h5{
+  color: #222022;
 }
