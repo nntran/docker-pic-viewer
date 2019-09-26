@@ -29,7 +29,7 @@ It will show the docker pickture ;)
 To view your own picture, you need to mount a volume and put a picture to the mounted folder. The picture must named as `photo.jpg`.
 
 ```sh
-docker run -v <your folder>:/pic_viewer/static -p 5000:5000 pic-viewer
+docker run -v <my-folder>:/pic_viewer/static -p 5000:5000 pic-viewer
 ```
 
 You have to refresh navigator or clear the cache in order to view your picture.
