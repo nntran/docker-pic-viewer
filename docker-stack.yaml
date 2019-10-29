@@ -7,8 +7,8 @@ services:
     networks:
       - traefik-net
     environment:
-      - ENV=dev
-      - DOMAIN=swarm.lan
+      - ENV=${ENV:-dev}
+      - DOMAIN=${DOMAIN:-swarm.lan}
     deploy:
       mode: replicated
       replicas: 4
