@@ -9,7 +9,11 @@ RUN apk add --no-cache gcc musl-dev linux-headers
 COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 WORKDIR $APP_DIR
-COPY . $APP_DIR
+#COPY . $APP_DIR
+COPY static $APP_DIR/static
+COPY templates $APP_DIR/templates
+COPY app.py $APP_DIR
+
 VOLUME ["/pic-viewer/static"]
 EXPOSE 5000
 CMD ["flask", "run"]

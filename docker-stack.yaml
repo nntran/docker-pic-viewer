@@ -3,12 +3,10 @@ services:
   pic-viewer:
     image: ntdtfr/pic-viewer
     labels:
-      - fr.ntdt.deploy.env=${ENV:-dev}
+      - fr.ntdt.environment=${ENVIRONMENT:-DEV}
+      - fr.ntdt.service.description="A simple service for test"
     networks:
       - traefik-net
-    environment:
-      - ENV=${ENV:-dev}
-      - DOMAIN=${DOMAIN:-swarm.lan}
     deploy:
       mode: replicated
       replicas: 4
