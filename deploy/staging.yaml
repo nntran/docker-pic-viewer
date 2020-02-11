@@ -1,0 +1,47 @@
+version: "3.7"
+services:
+  pic-viewer:
+    image: ntdtfr/pic-viewer
+    labels:
+      - fr.ntdt.environment=${ENVIRONMENT:-STA}
+      - fr.ntdt.service.description="A simple service for test"
+    networks:
+      - traefik-net
+    deploy:
+      mode: replicated
+      replicas: 3
+      labels:
+        # - traefik.enable=true
+
+        # traefik v1.7
+        # https://docs.traefik.io/v1.7/configuration/backends/docker/
+        # - traefik.docker.network=traefik-net
+        # # - traefik.entryPoint=http,https
+        # - traefik.port=5000
+        # - traefik.backend=pic-viewer
+        # - traefik.frontend.rule=Host:pic-viewer.${DOMAIN}
+
+        # Traefik v2.x
+        # https://docs.traefik.io/providers/docker/
+        - traefik.http.routers.pic-viewer.rule=Host(`pic-viewer.${DOMAIN:-swarm.lan}`)
+        - traefik.http.services.pic-viewer-service.loadbalancer.server.port=5000
+        - traefik.http.middlewares.latency-check.circuitbreaker.expression=LatencyAtQuantileMS(50.0) > 100
+      placement:
+        constraints:
+          - node.role==worker
+      update_config:
+        parallelism: 2
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+        max_attempts: 5
+      # resources:
+      #   limits:
+      #     cpus: "0.2"
+      #     memory: 200M
+      #   reservations:
+      #     cpus: "0.1"
+      #     memory: 100M
+networks:
+  traefik-net:
+    external: true

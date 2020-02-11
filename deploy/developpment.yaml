@@ -9,7 +9,7 @@ services:
       - traefik-net
     deploy:
       mode: replicated
-      replicas: 4
+      replicas: 3
       labels:
         # - traefik.enable=true
 
