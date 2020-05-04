@@ -1,7 +1,29 @@
 version: "3.7"
 services:
   pic-viewer:
+    container_name: pic-viewer
+    image: ${REPOSITORY:-ntdtfr}/pic-viewer:${VERSION:-latest}
     build:
       context: .
+      dockerfile: Dockerfile
+      args:
+        version: ${VERSION:-latest}
+    environment:
+      # - FLASK_APP=pic-viewer
+      # production or development
+      - FLASK_ENV=development
+      - FLASK_RUN_HOST=0.0.0.0
     ports:
-      - 5000:5000
+      - 5001:5000
+    networks:
+      - private
+    healthcheck:
+      test: ["CMD", "curl", "-fs", "http://pic-viewer:5000/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+networks:
+  private:
+    driver: bridge # for local (use overlay for swarm multi nodes)

@@ -1,44 +1,47 @@
 version: "3.7"
 services:
   pic-viewer:
-    image: ntdtfr/pic-viewer
-    labels:
-      - fr.ntdt.environment=${ENVIRONMENT:-DEV}
-      - fr.ntdt.service.description="A simple service for test"
+    image: ${REPOSITORY:-ntdtfr}/pic-viewer:${VERSION:-latest}
+    environment:
+      # - FLASK_APP=pic-viewer
+      # production or development
+      - FLASK_ENV=production
+      - FLASK_RUN_HOST=0.0.0.0
+    # ports:
+    #   - 5001:5000
     networks:
       - traefik-net
+    healthcheck:
+      test: ["CMD", "curl", "-fs", "http://pic-viewer:5000/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     deploy:
       mode: replicated
-      replicas: 3
+      replicas: 1
       labels:
-        # - traefik.enable=true
-
-        # traefik v1.7
-        # https://docs.traefik.io/v1.7/configuration/backends/docker/
-        # - traefik.docker.network=traefik-net
-        # # - traefik.entryPoint=http,https
-        # - traefik.port=5000
-        # - traefik.backend=pic-viewer
-        # - traefik.frontend.rule=Host:pic-viewer.${DOMAIN}
-
         # Traefik v2.x
         # https://docs.traefik.io/providers/docker/
+        - traefik.enable=true
         - traefik.http.routers.pic-viewer.rule=Host(`pic-viewer.${DOMAIN:-swarm.lan}`)
         - traefik.http.services.pic-viewer-service.loadbalancer.server.port=5000
+        - traefik.http.services.pic-viewer-service.loadbalancer.healthcheck.path=/health
+        - traefik.http.services.pic-viewer-service.loadbalancer.healthcheck.port=5000
         - traefik.http.middlewares.latency-check.circuitbreaker.expression=LatencyAtQuantileMS(50.0) > 100
       placement:
         constraints:
           - node.role==worker
       update_config:
-        parallelism: 2
+        parallelism: 1
         delay: 10s
       restart_policy:
         condition: on-failure
         max_attempts: 5
-      # resources:
-      #   limits:
-      #     cpus: "0.2"
-      #     memory: 200M
+      resources:
+        limits:
+          cpus: "0.2"
+          memory: 200M
       #   reservations:
       #     cpus: "0.1"
       #     memory: 100M
