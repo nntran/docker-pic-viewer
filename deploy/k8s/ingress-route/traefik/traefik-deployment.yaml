@@ -1,0 +1,123 @@
+# Un DaemonSet sert à déployér sur l’ensemble des noeuds du cluster Kubernetes.
+# C’est le mode de déploiement qui est souvent choisi pour les ingress controllers
+# afin d’avoir une forte redondance de cette brique critique, d’être au plus proche des backends
+# et donc d’optimiser les flux et les ressources.
+##
+# apiVersion: apps/v1
+# kind: DaemonSet
+# metadata:
+#   name: traefik-ingress-controller
+#   labels:
+#     k8s-app: traefik-ingress-lb
+#     kubernetes.io/cluster-service: "true"
+# spec:
+#   selector:
+#     matchLabels:
+#       k8s-app: traefik-ingress-lb
+#   template:
+#     metadata:
+#       labels:
+#         k8s-app: traefik-ingress-lb
+#         name: traefik-ingress-lb
+#     spec:
+#       hostNetwork: true
+#       dnsPolicy: ClusterFirstWithHostNet
+#       serviceAccountName: traefik-ingress-controller
+#       terminationGracePeriodSeconds: 60
+#       tolerations:
+#         - key: node-role.kubernetes.io/master
+#           effect: NoSchedule
+#       containers:
+#         - image: traefik:v2.1.1
+#           name: traefik-ingress-lb
+#           imagePullPolicy: Always
+#           volumeMounts:
+#             - mountPath: "/cert/"
+#               name: cert
+#           resources:
+#             requests:
+#               cpu: 100m
+#               memory: 20Mi
+#           args:
+#             - --providers.kubernetescrd
+#             - --entrypoints.web.address=:80
+#             - --entrypoints.websecure.address=:443
+#             - --api.insecure
+#             - --certificatesresolvers.le.acme.email=ntran@ntdt.fr
+#             - --certificatesresolvers.le.acme.storage=/cert/acme.json
+#             - --certificatesResolvers.le.acme.httpChallenge.entryPoint=web
+#       volumes:
+#         - name: cert
+#           hostPath:
+#             path: /Users/ntran/Projects/poc/rollingupd/certs/
+#             # path: ./certs/
+#             type: Directory
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: traefik-web-ui
+# spec:
+#   selector:
+#     k8s-app: traefik-ingress-lb
+#     app: traefik-ingress-lb
+#   type: LoadBalancer
+#   ports:
+#     - port: 8080
+#       targetPort: 8080
+#       name: api
+#     - port: 443
+#       targetPort: 443
+#       name: websecure
+#     - port: 80
+#       targetPort: 80
+#       name: web
+
+# https://docs.traefik.io/routing/providers/kubernetes-crd/#configuration-examples
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: traefik-ingress-controller
+
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: traefik
+  labels:
+    app: traefik
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: traefik
+  template:
+    metadata:
+      labels:
+        app: traefik
+    spec:
+      serviceAccountName: traefik-ingress-controller
+      containers:
+        - name: traefik
+          image: traefik:v2.2
+          args:
+            - --log.level=DEBUG
+            - --api
+            - --api.insecure
+            - --entrypoints.web.address=:80
+            - --entrypoints.websecure.address=:443
+            - --entrypoints.tcpep.address=:8000
+            - --entrypoints.udpep.address=:9000/udp
+            - --providers.kubernetescrd
+          ports:
+            - name: web
+              containerPort: 80
+            - name: websecure
+              containerPort: 443
+            - name: admin
+              containerPort: 8080
+            - name: tcpep
+              containerPort: 8000
+            - name: udpep
+              containerPort: 9000

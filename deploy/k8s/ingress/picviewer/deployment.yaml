@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pv-with-health
+  labels:
+    app: pv-with-health
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: pv-with-health
+  template:
+    metadata:
+      labels:
+        app: pv-with-health
+    spec:
+      containers:
+        - name: pv-with-health
+          image: ntdtfr/pic-viewer:1.0
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: FLASK_ENV
+              value: "development"
+            - name: FLASK_RUN_HOST
+              value: "0.0.0.0"
+          ports:
+            - name: web
+              containerPort: 5000
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: web
+            initialDelaySeconds: 3
+            periodSeconds: 3
+          # readinessProbe:
+          #   httpGet:
+          #     path: /health
+          #     port: web
+          #   initialDelaySeconds: 3
+          #   periodSeconds: 3

@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: pv-with-health-service
+  labels:
+    app: pv-with-health-service
+spec:
+  selector:
+    app: pv-with-health
+  ports:
+    - name: http
+      port: 5000
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: pv-web-ingress
+spec:
+  entryPoints:
+    - web
+  routes:
+    - kind: Rule
+      match: Host(`pv.k8s.local`) && PathPrefix(`/`)
+      services:
+        - name: pv-with-health-service
+          port: 5000
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: pv-websecure-ingress
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: Host(`pv.k8s.local) && PathPrefix(`/`)
+      services:
+        - name: pv-with-health-service
+          port: 5000
+  # tls:
+  #   certResolver: le
