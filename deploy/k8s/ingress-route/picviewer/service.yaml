@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: pv-with-health-service
+  name: pic-viewer-service
   labels:
-    app: pv-with-health-service
+    app: pic-viewer-service
 spec:
   selector:
-    app: pv-with-health
+    app: pic-viewer
   ports:
     - name: http
       port: 5000
@@ -15,7 +15,7 @@ spec:
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
-  name: pv-web-ingress
+  name: pic-viewer-web-ingress
 spec:
   entryPoints:
     - web
@@ -23,13 +23,13 @@ spec:
     - kind: Rule
       match: Host(`pv.k8s.local`) && PathPrefix(`/`)
       services:
-        - name: pv-with-health-service
+        - name: pic-viewer-service
           port: 5000
 ---
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
-  name: pv-websecure-ingress
+  name: pic-viewer-websecure-ingress
 spec:
   entryPoints:
     - websecure
@@ -37,7 +37,7 @@ spec:
     - kind: Rule
       match: Host(`pv.k8s.local) && PathPrefix(`/`)
       services:
-        - name: pv-with-health-service
+        - name: pic-viewer-service
           port: 5000
   # tls:
   #   certResolver: le

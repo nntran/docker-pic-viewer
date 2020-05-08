@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: pv-with-health
+  name: pic-viewer
   labels:
-    app: pv-with-health
+    app: pic-viewer
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: pv-with-health
+      app: pic-viewer
   template:
     metadata:
       labels:
-        app: pv-with-health
+        app: pic-viewer
     spec:
       containers:
-        - name: pv-with-health
+        - name: pic-viewer
           image: ntdtfr/pic-viewer:1.0
           imagePullPolicy: IfNotPresent
           env:
@@ -33,9 +33,11 @@ spec:
               port: web
             initialDelaySeconds: 3
             periodSeconds: 3
-          # readinessProbe:
-          #   httpGet:
-          #     path: /health
-          #     port: web
-          #   initialDelaySeconds: 3
-          #   periodSeconds: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: web
+            periodSeconds: 3
+            timeoutSeconds: 2
+            successThreshold: 2
+            failureThreshold: 2
