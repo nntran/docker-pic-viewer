@@ -7,6 +7,12 @@ It's base on Docker and Flask framework.
 
 ## How to use it ?
 
+### Get the project
+
+```
+git clone https://github.com/nntran/pic-viewer-docker-flask
+```
+
 ### Build
 
 ```sh
