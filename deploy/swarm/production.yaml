@@ -12,7 +12,7 @@ services:
     networks:
       - traefik-net
     healthcheck:
-      test: ["CMD", "curl", "-fs", "http://pic-viewer:5000/health"]
+      test: ["CMD", "curl", "-fs", "http://localhost:5000/health"]
       interval: 5s
       timeout: 5s
       retries: 5

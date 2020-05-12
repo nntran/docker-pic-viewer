@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pic-viewer-v1.0
+  labels:
+    app: pic-viewer
+    deployment: blue
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: pic-viewer
+      deployment: blue
+  template:
+    metadata:
+      labels:
+        app: pic-viewer
+        deployment: blue
+    spec:
+      containers:
+        - name: pic-viewer
+          image: ntdtfr/pic-viewer:1.0
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: FLASK_ENV
+              value: "development"
+            - name: FLASK_RUN_HOST
+              value: "0.0.0.0"
+          ports:
+            - name: web
+              containerPort: 5000
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: web
+            initialDelaySeconds: 3
+            periodSeconds: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: web
+            periodSeconds: 3
+            timeoutSeconds: 2
+            successThreshold: 2
+            failureThreshold: 2
