@@ -34,7 +34,7 @@ pipeline {
         stage ('Deploy Pic-Viewer on Staging') {
             when { branch 'staging' }
             steps {
-                sh 'envsubst < ".jenkins/deploy/staging.yml" > "staging.yml"'
+                sh 'envsubst < ".jenkins/deploy/staging.yaml" > "staging.yaml"'
                 //sh "ssh ubuntu@${SWARM_WORKER_1_IP} 'sudo docker pull ${DOCKER_HUB_ID}:${PROJECT_NAME}-${JOB_BASE_NAME}-${BUILD_NUMBER}'"
                 //sh "ssh ubuntu@${SWARM_WORKER_2_IP} 'sudo docker pull ${DOCKER_HUB_ID}:${PROJECT_NAME}-${JOB_BASE_NAME}-${BUILD_NUMBER}'"
                 //sh "docker -H tcp://${SWARM_MANAGER_IP}:2376 --tlsverify --tlscacert=${TLS_CA} --tlscert=${TLS_CERT} --tlskey=${TLS_KEY} stack deploy --compose-file staging.yml training"
@@ -43,7 +43,7 @@ pipeline {
         stage ('Deploy Pic-Viewer on Production') {
             when { branch 'production' }
             steps {
-                sh 'envsubst < ".jenkins/deploy/production.yml" > "production.yml"'
+                sh 'envsubst < ".jenkins/deploy/production.yaml" > "production.yaml"'
                 //sh "ssh ubuntu@${SWARM_WORKER_1_IP} 'sudo docker pull ${DOCKER_HUB_ID}:${PROJECT_NAME}-${JOB_BASE_NAME}-${BUILD_NUMBER}'"
                 //sh "ssh ubuntu@${SWARM_WORKER_2_IP} 'sudo docker pull ${DOCKER_HUB_ID}:${PROJECT_NAME}-${JOB_BASE_NAME}-${BUILD_NUMBER}'"
                 //sh "docker -H tcp://${SWARM_MANAGER_IP}:2376 --tlsverify --tlscacert=${TLS_CA} --tlscert=${TLS_CERT} --tlskey=${TLS_KEY} stack deploy --compose-file production.yml training"
